@@ -1,0 +1,8 @@
+The Pi Cobbler adafruit connection has pins listed. This document desribes the conversion from
+the cobbler board to stianeikeland 's library go-rpio
+
+Cobbler Stianeikeland
+TXD     14
+RXD     15
+#18     18
+SDA      2

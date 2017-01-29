@@ -12,15 +12,32 @@ import (
 	"github.com/stianeikeland/go-rpio"
 	"os"
 	"time"
+	"os/signal"
+	"syscall"
 )
 
 var (
+	// TODO find out if the below comment is true
 	// Use mcu pin 10, corresponds to physical pin 19 on the pi
-	pin7 = rpio.Pin(11)
-	pin3 = rpio.Pin(5)
+	pin = rpio.Pin(2)
 )
 
 func main() {
+
+	running := true
+
+	// Handle Exit statements
+	signalChannel := make(chan os.Signal, 2)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-signalChannel
+		switch sig {
+			case os.Interrupt:
+			running = false
+			case syscall.SIGTERM:
+			running = false
+		}
+	}()
 
 	println("Attempting to open pin")
 
@@ -35,31 +52,23 @@ func main() {
 	defer cleanup()
 
 	// Set pin to output mode
-	pin3.Input()
-	pin7.Output()
-	pin7.PullDown()
-	pin7.Low()
+	pin.Output()
+	pin.PullDown()
+	pin.Low()
 	// Toggle pin 20 times
-	for x := 0; x < 200; x++ {
+	for running {
 
-		print("Pin Read: ")
-		state := pin3.Read()
-		if (state == rpio.High) {
-			println("High")
-		} else {
-			println("Low")
-		}
-
-		println("changeing pin 7")
-		pin7.Toggle()
+		println("changeing pin")
+		pin.Toggle()
 		time.Sleep(time.Second)
 	}
-
-
+	cleanup()
 
 }
 
 
 func cleanup() {
+	println("Trying to close RPIO library")
 	rpio.Close()
+	println("Closed RPIO Library")
 }
