@@ -17,9 +17,8 @@ import (
 )
 
 var (
-	// TODO find out if the below comment is true
-	// Use mcu pin 10, corresponds to physical pin 19 on the pi
 	pin = rpio.Pin(2)
+	pin21 = rpio.Pin(21)
 )
 
 func main() {
@@ -55,15 +54,29 @@ func main() {
 	pin.Output()
 	pin.PullDown()
 	pin.Low()
-	// Toggle pin 20 times
+	pin.Write(rpio.Low)
+
+	pin.Input()
+	pin.PullOff()
+	pin.PullDown()
+
+	//pin21.Input()
+	//pin21.PullDown()
+
 	for running {
 
-		println("changeing pin")
-		pin.Toggle()
+		//println("changeing pin")
+		//pin.Toggle()
+
+		println("reading pin")
+		state := pin.Read()
+		if (state == rpio.High) {
+			println("High")
+		} else {
+			println("low")
+		}
 		time.Sleep(time.Second)
 	}
-	cleanup()
-
 }
 
 
